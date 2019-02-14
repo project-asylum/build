@@ -229,8 +229,8 @@ FIND_LEAVES_EXCLUDES := $(addprefix --prune=, $(SCAN_EXCLUDE_DIRS) .repo .git)
 $(call project-set-path-variant,ril,TARGET_RIL_VARIANT,hardware/ril)
 
 -include vendor/extra/BoardConfigExtra.mk
-ifneq ($(GZOSP_BUILD),)
-include vendor/gzosp/config/BoardConfigGZOSP.mk
+ifneq ($(ASYLUM_BUILD),)
+include vendor/asylum/config/BoardConfigASYLUM.mk
 endif
 
 # The build system exposes several variables for where to find the kernel
@@ -1151,7 +1151,7 @@ include $(BUILD_SYSTEM)/ninja_config.mk
 include $(BUILD_SYSTEM)/soong_config.mk
 endif
 
-ifneq ($(GZOSP_BUILD),)
+ifneq ($(ASYLUM_BUILD),)
 ## We need to be sure the global selinux policies are included
 ## last, to avoid accidental resetting by device configs
 $(eval include device/gzosp/sepolicy/common/sepolicy.mk)
@@ -1161,9 +1161,9 @@ endif
 -include vendor/*/build/core/config.mk
 
 # Rules for QCOM targets
--include $(TOPDIR)vendor/gzosp/build/core/qcom_target.mk
+-include $(TOPDIR)vendor/asylum/build/core/qcom_target.mk
 
 # Rules for MTK targets
--include $(TOPDIR)vendor/gzosp/build/core/mtk_target.mk
+-include $(TOPDIR)vendor/asylum/build/core/mtk_target.mk
 
 include $(BUILD_SYSTEM)/dumpvar.mk
