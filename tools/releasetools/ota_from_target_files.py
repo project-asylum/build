@@ -845,11 +845,11 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   script.Print("************************************************");
   script.Print("                          _                     ");
-  script.Print("          /\             | |                    ");
-  script.Print("         /  \   ___ _   _| |_   _ _ __ ___      ");
-  script.Print("        / /\ \ / __| | | | | | | | '_ ` _ \     ");
-  script.Print("       / ____ \\__ \ |_| | | |_| | | | | | |    ");
-  script.Print("      /_/    \_\___/\__, |_|\__,_|_| |_| |_|    ");
+  script.Print("          /\\             | |                    ");
+  script.Print("         /  \\   ___ _   _| |_   _ _ __ ___      ");
+  script.Print("        / /\\ \\ / __| | | | | | | | '_ ` _ \\     ");
+  script.Print("       / ____ \\\\\\\\__ \\ |_| | | |_| | | | | | |    ");
+  script.Print("      /_/    \\_\\___/\\__, |_|\\__,_|_| |_| |_|    ");
   script.Print("                     __/ |                      ");
   script.Print("                    |___/                       ");
   script.Print("                                                ");
