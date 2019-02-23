@@ -522,7 +522,7 @@ function print_lunch_menu()
     echo "  ███    ███    ▄█    ███ ███   ███ ███▌    ▄ ███    ███ ███   ███   ███ "
     echo "  ███    █▀   ▄████████▀   ▀█████▀  █████▄▄██ ████████▀   ▀█   ███   █▀  "
     echo "                                    ▀                                    "
-    tput sgr0;                                                    
+    tput sgr0;
     echo ""
     echo "                      Welcome to the device menu                      "
     echo ""
@@ -1787,13 +1787,23 @@ function dopush()
         rm -f $OUT/.log;return $ret
     fi
 
+    is_gnu_sed=`sed --version | head -1 | grep -c GNU`
     # Install: <file>
-    LOC="$(cat $OUT/.log | sed -r -e 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' -e 's/^\[ {0,2}[0-9]{1,3}% [0-9]{1,6}\/[0-9]{1,6}\] +//' \
-        | grep '^Install: ' | cut -d ':' -f 2)"
-
+    if [ $is_gnu_sed -gt 0 ]; then
+        LOC="$(cat $OUT/.log | sed -r -e 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' -e 's/^\[ {0,2}[0-9]{1,3}% [0-9]{1,6}\/[0-9]{1,6}\] +//' \
+            | grep '^Install: ' | cut -d ':' -f 2)"
+    else
+        LOC="$(cat $OUT/.log | sed -E "s/"$'\E'"\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]//g" -E "s/^\[ {0,2}[0-9]{1,3}% [0-9]{1,6}\/[0-9]{1,6}\] +//" \
+            | grep '^Install: ' | cut -d ':' -f 2)"
+    fi
     # Copy: <file>
-    LOC="$LOC $(cat $OUT/.log | sed -r -e 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' -e 's/^\[ {0,2}[0-9]{1,3}% [0-9]{1,6}\/[0-9]{1,6}\] +//' \
-        | grep '^Copy: ' | cut -d ':' -f 2)"
+    if [ $is_gnu_sed -gt 0 ]; then
+        LOC="$LOC $(cat $OUT/.log | sed -r -e 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g' -e 's/^\[ {0,2}[0-9]{1,3}% [0-9]{1,6}\/[0-9]{1,6}\] +//' \
+            | grep '^Copy: ' | cut -d ':' -f 2)"
+    else
+        LOC="$LOC $(cat $OUT/.log | sed -E "s/"$'\E'"\[([0-9]{1,3}((;[0-9]{1,3})*)?)?[m|K]//g" -E 's/^\[ {0,2}[0-9]{1,3}% [0-9]{1,6}\/[0-9]{1,6}\] +//' \
+            | grep '^Copy: ' | cut -d ':' -f 2)"
+    fi
 
     # If any files are going to /data, push an octal file permissions reader to device
     if [ -n "$(echo $LOC | egrep '(^|\s)/data')" ]; then
@@ -1814,12 +1824,12 @@ EOF
     fi
 
     stop_n_start=false
-    for FILE in $(echo $LOC | tr " " "\n"); do
+    for TARGET in $(echo $LOC | tr " " "\n" | sed "s#.*$OUT##" | sort | uniq); do
         # Make sure file is in $OUT/system or $OUT/data
-        case $FILE in
-            $OUT/system/*|$OUT/data/*)
-                # Get target file name (i.e. /system/bin/adb)
-                TARGET=$(echo $FILE | sed "s#$OUT##")
+        case $TARGET in
+            /system/*|/data/*)
+                # Get out file from target (i.e. /system/bin/adb)
+                FILE=$OUT$TARGET
             ;;
             *) continue ;;
         esac
